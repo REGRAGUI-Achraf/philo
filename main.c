@@ -14,6 +14,6 @@ int main(int ac, char **av)
         printf("Erreur lors de l'initialisation.\n");
         return (1);
     }
-    printf("%d / %d / %d / %d / %d\n", data.nb_philo, data.time_to_die, data.time_to_eat, data.time_to_sleep, data.nb_must_eat);
+    printf("%d / %d / %d / %d / %d", data.nb_philo, data.time_to_die, data.time_to_eat, data.time_to_sleep, data.nb_must_eat);
     return 0;
 }
