@@ -1,7 +1,7 @@
 #ifndef PHILO_H
 # define PHILO_H
 
-
+#include <sys/time.h>
 #include <pthread.h>
 #include <stdio.h>
 
