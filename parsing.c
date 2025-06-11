@@ -1,56 +1,84 @@
 #include "philo.h"
-#include <limits.h>
-#include <stdio.h>
 
-int	nb_args(int ac)
+int	nb_args(int argc)
 {
-	if (ac < 5 || ac > 6)
+	if (argc < 5 || argc > 6)
 	{
-		if (ac < 5)
-			printf("Not enough arguments\n");
-		else
-			printf("Too many arguments\n");
-		return (-1);
+		printf("Usage: ./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]\n");
+		return (1);
 	}
 	return (0);
 }
-
-long	ft_atoi(const char *str)
+int	ft_atoi_safe(char *str)
 {
+	long	result;
 	int		i;
-	long	n;
 
+	if (!str || !str[0])
+		return (-1);
+	
 	i = 0;
-	n = 0;
-	while (str[i] == 32 || (str[i] >= 9 && str[i] <= 13))
-		i++;
 	while (str[i])
 	{
 		if (str[i] < '0' || str[i] > '9')
 			return (-1);
-		n = n * 10 + (str[i] - '0');
-		if (n > INT_MAX)
+		i++;
+	}
+	
+	result = 0;
+	i = 0;
+	while (str[i])
+	{
+		result = result * 10 + (str[i] - '0');
+		if (result > 2147483647)
 			return (-1);
 		i++;
 	}
-	return (n);
+	
+	if (result == 0)
+		return (-1);
+		
+	return ((int)result);
 }
 
-int	is_valid_arguments(int ac, char **av)
+int	is_valid_arguments(int argc, char **argv)
 {
-	int		i;
-	long	value;
+	int	i;
+	int	value;
+	int	time_to_die;
+	int	time_to_eat;
+	int	time_to_sleep;
 
 	i = 1;
-	while (i < ac)
+	while (i < argc)
 	{
-		value = ft_atoi(av[i]);
+		value = ft_atoi_safe(argv[i]);
 		if (value <= 0)
 		{
-			printf("Invalid value in argument\n");
-			return (-1);
+			printf("Error: All arguments must be positive integers\n");
+			return (1);
 		}
 		i++;
 	}
+	
+	time_to_die = ft_atoi_safe(argv[2]);
+	time_to_eat = ft_atoi_safe(argv[3]);
+	time_to_sleep = ft_atoi_safe(argv[4]);
+	
+	if (time_to_die < time_to_eat)
+	{
+		printf("Error: time_to_die (%d) must be >= time_to_eat (%d)\n", 
+				time_to_die, time_to_eat);
+		return (1);
+	}
+	
+	if (time_to_die < (time_to_eat + time_to_sleep))
+	{
+		printf("Warning: time_to_die (%d) < (%d)\n",
+				time_to_die, time_to_eat + time_to_sleep);
+		printf("This scenario might be very difficult or impossible to complete.\n");
+        return 1;
+	}
+	
 	return (0);
 }

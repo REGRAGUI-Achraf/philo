@@ -1,13 +1,15 @@
 CC = cc
-CFLAGS = -Werror -Wall -Wextra -pthread
-SRC = main.c parsing.c initialization.c	
-OBJ = $(SRC:.c=.o)
+CFLAGS = -Wall -Wextra -Werror -pthread
 NAME = philo
+
+SRC = main.c handle_erreur.c initialization.c parsing.c philoso.c threads.c utils.c
+
+OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
-$(NAME): philo.h $(OBJ)
-	$(CC) $(CFLAGS) $(SRC) -o $(NAME)
+$(NAME): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
 %.o: %.c philo.h
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -20,4 +22,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: re clean fclean
+.PHONY: all clean fclean re

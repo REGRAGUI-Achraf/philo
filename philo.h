@@ -1,48 +1,67 @@
 #ifndef PHILO_H
 # define PHILO_H
 
-#include <sys/time.h>
-#include <pthread.h>
-#include <stdio.h>
-
-struct s_philo;
-
-
-
-typedef struct s_data
-{
-    int             nb_philo;       // Nombre total de philosophes
-    int             time_to_die;    // Temps (en ms) qu’un philosophe peut survivre sans manger
-    int             time_to_eat;    // Temps (en ms) qu’un philosophe met à manger
-    int             time_to_sleep;  // Temps (en ms) qu’un philosophe dort après avoir mangé
-    int             nb_must_eat;    // Nombre de fois qu’un philosophe doit manger (optionnel)
-
-    long long       start_time;     // Heure de départ du programme (en ms) pour calculer les timestamps
-    int             dead;           // Flag indiquant si un philosophe est mort (1 = oui)
-
-    pthread_mutex_t *forks;         // Tableau de mutex représentant les fourchettes (une par philosophe)
-    pthread_mutex_t print;          // Mutex pour synchroniser l’affichage (évite les overlaps dans les logs)
-    
-    struct s_philo *arr_philo;
-}               t_data;
+# include <stdlib.h>
+# include <pthread.h>
+# include <stdio.h>
+# include <sys/time.h>
+# include <unistd.h>
 
 typedef struct s_philo
 {
-    int             id;             // ID du philosophe (de 1 à nb_philo)
-    int             meals;          // Nombre de repas déjà pris par ce philosophe
-    long long       last_meal;      // Timestamp du dernier repas (en ms)
+	int				id;
+	int				meals;
+	long long		last_meal;
+	pthread_t		thread;
+	pthread_mutex_t	meal_mutex;
+	struct s_data	*data;
+}	t_philo;
 
-    pthread_t       thread;         // Thread du philosophe (son exécution parallèle)
-    pthread_mutex_t meal_mutex;     // Mutex pour protéger l'accès à last_meal (éviter les data races)
+typedef struct s_data
+{
+	int				nb_philo;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				nb_must_eat;
+	int				dead;
+	long long		start_time;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	print;
+	t_philo			*arr_philo;
+}	t_data;
 
-    t_data          *data;          // Pointeur vers la struct globale (accès aux données partagées)
-}               t_philo;
+// Utility functions
+long long	get_time(void);
+void		ft_usleep(int ms);
+void		print_status(t_philo *philo, char *status);
 
-int	init_all(t_data *data, int ac, char **av);
-int is_valid_arguments(int ac, char **av);
-long	ft_atoi(const char *str);
-int nb_args(int ac);
+// Simulation functions
+int			check_death(t_philo *philo);
+int			simulation_stopped(t_data *data);
+void		take_forks(t_philo *philo);
+void		philo_eat(t_philo *philo);
+void		*philosopher_routine(void *arg);
+int			check_all_philosophers(t_philo *philos, t_data *data);
+void		*monitor_routine(void *arg);
 
+// Initialization functions
+int			init_mutexes(t_data *data);
+int			init_philosophers(t_data *data);
+int			create_philosopher_threads(t_data *data);
+void		join_philosopher_threads(t_data *data);
+void		cleanup(t_data *data);
+
+// Main simulation functions
+int			handle_single_philosopher(t_data *data);
+int			run_simulation(t_data *data);
+
+// Argument parsing functions (not defined in the provided code)
+int			nb_args(int argc);
+int			is_valid_arguments(int argc, char **argv);
+int			init_all(t_data *data, int argc, char **argv);
+
+int	ft_atoi_safe(char *str);
 
 
 #endif

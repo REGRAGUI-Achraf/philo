@@ -1,19 +1,44 @@
-#include <stdio.h>
 #include "philo.h"
 
-int main(int ac, char **av)
+int	run_simulation(t_data *data)
 {
-    t_data data;       
+	pthread_t	monitor;
 
-    if (nb_args(ac) == -1)
-        return 1;
-    if (is_valid_arguments(ac, av) == -1)
-        return 1;
-    if (init_all(&data, ac, av) != 0)
-    {
-        printf("Erreur lors de l'initialisation.\n");
-        return (1);
-    }
-    printf("%d / %d / %d / %d / %d", data.nb_philo, data.time_to_die, data.time_to_eat, data.time_to_sleep, data.nb_must_eat);
-    return 0;
+	data->start_time = get_time();
+	if (init_mutexes(data))
+		return (1);
+	if (init_philosophers(data))
+	{
+		cleanup(data);
+		return (1);
+	}
+	if (create_philosopher_threads(data))
+	{
+		cleanup(data);
+		return (1);
+	}
+	if (pthread_create(&monitor, NULL, monitor_routine, data))
+	{
+		cleanup(data);
+		return (1);
+	}
+	pthread_join(monitor, NULL);
+	join_philosopher_threads(data);
+	cleanup(data);
+	return (0);
+}
+
+int	main(int argc, char **argv)
+{
+	t_data	data;
+
+	if (nb_args(argc))
+		return (1);
+	if (is_valid_arguments(argc, argv))
+		return (1);
+	if (init_all(&data, argc, argv))
+		return (1);
+	if (handle_single_philosopher(&data))
+		return (0);
+	return (run_simulation(&data));
 }
