@@ -4,7 +4,7 @@ int	nb_args(int argc)
 {
 	if (argc < 5 || argc > 6)
 	{
-		printf("Usage: ./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]\n");
+		printf("Usage ---->  ./philo [number_of_philosophers] [time_to_die] [time_to_eat] [time_to_sleep] [number_of_times_each_philosopher_must_eat]\n");
 		return (1);
 	}
 	return (0);
@@ -45,10 +45,6 @@ int	is_valid_arguments(int argc, char **argv)
 {
 	int	i;
 	int	value;
-	// int	time_to_die;
-	// int	time_to_eat;
-	// int	time_to_sleep;
-
 	i = 1;
 	while (i < argc)
 	{
@@ -60,25 +56,5 @@ int	is_valid_arguments(int argc, char **argv)
 		}
 		i++;
 	}
-	
-	// time_to_die = ft_atoi_safe(argv[2]);
-	// time_to_eat = ft_atoi_safe(argv[3]);
-	// time_to_sleep = ft_atoi_safe(argv[4]);
-	
-	// if (time_to_die < time_to_eat)
-	// {
-	// 	printf("Error: time_to_die (%d) must be >= time_to_eat (%d)\n", 
-	// 			time_to_die, time_to_eat);
-	// 	return (1);
-	// }
-	
-	// if (time_to_die < (time_to_eat + time_to_sleep))
-	// {
-	// 	printf("Warning: time_to_die (%d) < (%d)\n",
-	// 			time_to_die, time_to_eat + time_to_sleep);
-	// 	printf("This scenario might be very difficult or impossible to complete.\n");
-    //     return 1;
-	// }
-	
 	return (0);
 }

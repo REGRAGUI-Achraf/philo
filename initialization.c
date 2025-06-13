@@ -17,7 +17,6 @@ int	init_all(t_data *data, int argc, char **argv)
 	data->forks = NULL;
 	data->arr_philo = NULL;
 	
-	// Vérifications supplémentaires
 	if (data->nb_philo <= 0 || data->time_to_die <= 0 || 
 		data->time_to_eat <= 0 || data->time_to_sleep <= 0)
 	{
