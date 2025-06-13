@@ -52,8 +52,8 @@ int	check_death(t_philo *philo)
 	pthread_mutex_unlock(&philo->meal_mutex);
 	if (time_since_meal > philo->data->time_to_die)
 	{
+		print_status(philo, "died");	
 		philo->data->dead = 1;
-		print_status(philo, "died");
 		return (1);
 	}
 	return (0);
