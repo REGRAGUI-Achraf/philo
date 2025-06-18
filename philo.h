@@ -24,7 +24,7 @@ typedef struct s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_must_eat;
-	int				dead;
+	int				dead; //0 si normal --- 1 si mort
 	long long		start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print;
@@ -44,6 +44,8 @@ void		philo_eat(t_philo *philo);
 void		*philosopher_routine(void *arg);
 int			check_all_philosophers(t_philo *philos, t_data *data);
 void		*monitor_routine(void *arg);
+int			simulation_has_ended(t_data *data);
+
 
 // Initialization functions
 int			init_mutexes(t_data *data);

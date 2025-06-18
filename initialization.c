@@ -58,7 +58,7 @@ int	init_philosophers(t_data *data)
 		return (1);
 	i = 0;
 	while (i < data->nb_philo)
-	{
+	{	
 		data->arr_philo[i].id = i + 1;
 		data->arr_philo[i].meals = 0;
 		data->arr_philo[i].last_meal = data->start_time;
