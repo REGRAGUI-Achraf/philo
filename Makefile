@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread  -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror -pthread  
 NAME = philo
 
 SRC = main.c handle_erreur.c initialization.c parsing.c philoso.c threads.c utils.c

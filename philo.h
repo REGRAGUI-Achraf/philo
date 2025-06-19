@@ -28,6 +28,7 @@ typedef struct s_data
 	long long		start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print;
+	pthread_mutex_t start_mutex;
 	pthread_mutex_t	dead_mutex; // Ajouté pour protéger dead
 	t_philo			*arr_philo;
 }	t_data;

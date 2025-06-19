@@ -33,11 +33,13 @@ void	philo_eat(t_philo *philo)
 	left_fork = philo->id - 1;
 	right_fork = philo->id % philo->data->nb_philo;
 	take_forks(philo);
-	print_status(philo, "is eating");
+	
 	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_meal = get_time();
 	philo->meals++;
 	pthread_mutex_unlock(&philo->meal_mutex);
+	
+	print_status(philo, "is eating");
 	ft_usleep(philo->data->time_to_eat);
 	pthread_mutex_unlock(&philo->data->forks[left_fork]);
 	pthread_mutex_unlock(&philo->data->forks[right_fork]);
