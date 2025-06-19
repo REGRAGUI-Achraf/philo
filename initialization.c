@@ -46,6 +46,8 @@ int	init_mutexes(t_data *data)
 	}
 	if (pthread_mutex_init(&data->print, NULL))
 		return (1);
+	if (pthread_mutex_init(&data->dead_mutex, NULL)) // AJOUT
+		return (1);
 	return (0);
 }
 

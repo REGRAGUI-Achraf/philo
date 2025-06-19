@@ -18,9 +18,13 @@ void	ft_usleep(int ms)
 void	print_status(t_philo *philo, char *status)
 {
 	long long	timestamp;
+	int			stopped;
 
 	pthread_mutex_lock(&philo->data->print);
-	if (!philo->data->dead)
+	pthread_mutex_lock(&philo->data->dead_mutex); // AJOUT protection lecture
+	stopped = philo->data->dead;
+	pthread_mutex_unlock(&philo->data->dead_mutex);
+	if (!stopped)
 	{
 		timestamp = get_time() - philo->data->start_time;
 		printf("%lld %d %s\n", timestamp, philo->id, status);
@@ -40,6 +44,7 @@ void	cleanup(t_data *data)
 		i++;
 	}
 	pthread_mutex_destroy(&data->print);
+	pthread_mutex_destroy(&data->dead_mutex); // AJOUT
 	free(data->forks);
 	free(data->arr_philo);
 }
