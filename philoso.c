@@ -42,6 +42,14 @@ void	philo_eat(t_philo *philo)
 	pthread_mutex_unlock(&philo->data->forks[left_fork]);
 	pthread_mutex_unlock(&philo->data->forks[right_fork]);
 }
+int	simulation_stopped(t_data *data)
+{
+	int val;
+	pthread_mutex_lock(&data->dead_mutex);
+	val = data->dead;
+	pthread_mutex_unlock(&data->dead_mutex);
+	return val;
+}
 
 void	*philosopher_routine(void *arg)
 {

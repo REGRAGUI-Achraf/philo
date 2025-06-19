@@ -50,14 +50,6 @@ int	check_all_philosophers(t_philo *philos, t_data *data)
 	return (0);
 }
 
-int	simulation_stopped(t_data *data)
-{
-	int val;
-	pthread_mutex_lock(&data->dead_mutex);
-	val = data->dead;
-	pthread_mutex_unlock(&data->dead_mutex);
-	return val;
-}
 int	handle_single_philosopher(t_data *data)
 {
 	if (data->nb_philo == 1)
