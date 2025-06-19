@@ -2,9 +2,6 @@
 
 int	run_simulation(t_data *data)
 {
-	pthread_t	monitor;
-
-	data->start_time = get_time();
 	if (init_mutexes(data))
 		return (1);
 	if (init_philosophers(data))
@@ -17,12 +14,12 @@ int	run_simulation(t_data *data)
 		cleanup(data);
 		return (1);
 	}
-	if (pthread_create(&monitor, NULL, monitor_routine, data))
+	while (!simulation_stopped(data))
 	{
-		cleanup(data);
-		return (1);
+		if (check_all_philosophers(data->arr_philo, data))
+			break;
+		ft_usleep(1);
 	}
-	pthread_join(monitor, NULL);
 	join_philosopher_threads(data);
 	cleanup(data);
 	return (0);
