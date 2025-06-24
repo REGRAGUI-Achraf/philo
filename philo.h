@@ -13,7 +13,7 @@ typedef struct s_philo
 	int				meals;
 	long long		last_meal;
 	pthread_t		thread;
-	pthread_mutex_t	meal_mutex;
+	pthread_mutex_t	meal_mutex; // Mutex pour protéger l'accès à last_meal et meals
 	struct s_data	*data;
 }	t_philo;
 
@@ -45,8 +45,6 @@ void		take_forks(t_philo *philo);
 void		philo_eat(t_philo *philo);
 void		*philosopher_routine(void *arg);
 int			check_all_philosophers(t_philo *philos, t_data *data);
-void		*monitor_routine(void *arg);
-int			simulation_has_ended(t_data *data);
 
 
 // Initialization functions

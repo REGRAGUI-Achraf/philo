@@ -65,8 +65,8 @@ int	init_philosophers(t_data *data)
 	{	
 		data->arr_philo[i].id = i + 1;
 		data->arr_philo[i].meals = 0;
-		data->arr_philo[i].last_meal = data->start_time;
 		data->arr_philo[i].data = data;
+		data->arr_philo[i].last_meal = data->start_time;
 		if (pthread_mutex_init(&data->arr_philo[i].meal_mutex, NULL))
 			return (1);
 		i++;

@@ -21,8 +21,8 @@ void	print_status(t_philo *philo, char *status)
 	int			stopped;
 
 	pthread_mutex_lock(&philo->data->print);
-	pthread_mutex_lock(&philo->data->dead_mutex); // AJOUT protection lecture
-	stopped = philo->data->dead;
+	pthread_mutex_lock(&philo->data->dead_mutex); 
+	stopped = philo->data->dead; //1 
 	pthread_mutex_unlock(&philo->data->dead_mutex);
 	if (!stopped)
 	{
@@ -45,6 +45,7 @@ void	cleanup(t_data *data)
 	}
 	pthread_mutex_destroy(&data->print);
 	pthread_mutex_destroy(&data->dead_mutex); // AJOUT
+	pthread_mutex_destroy(&data->start_mutex); // 🔧 Ajout
 	free(data->forks);
 	free(data->arr_philo);
 }
