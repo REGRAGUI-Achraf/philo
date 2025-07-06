@@ -35,7 +35,9 @@ typedef struct s_data
 
 // Utility functions
 long long	get_time(void);
-void		ft_usleep(int ms);
+// void		ft_usleep(int ms);
+void ft_usleep_safe(t_philo *philo, int ms);
+
 void		print_status(t_philo *philo, char *status);
 
 // Simulation functions

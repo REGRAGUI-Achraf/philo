@@ -7,14 +7,16 @@ long long	get_time(void)
 	gettimeofday(&tv, NULL);
 	return ((tv.tv_sec * 1000LL) + (tv.tv_usec / 1000));
 }
+
 void	ft_usleep(int ms)
 {
 	long long	start;
 
 	start = get_time();
 	while (get_time() - start < ms)
-		usleep(100);
+		usleep(500);
 }
+
 void	print_status(t_philo *philo, char *status)
 {
 	long long	timestamp;
@@ -22,7 +24,7 @@ void	print_status(t_philo *philo, char *status)
 
 	pthread_mutex_lock(&philo->data->print);
 	pthread_mutex_lock(&philo->data->dead_mutex); 
-	stopped = philo->data->dead; //1 
+	stopped = philo->data->dead;
 	pthread_mutex_unlock(&philo->data->dead_mutex);
 	if (!stopped)
 	{
@@ -36,16 +38,27 @@ void	cleanup(t_data *data)
 {
 	int	i;
 
-	i = 0;
-	while (i < data->nb_philo)
+	if (data->forks)
 	{
-		pthread_mutex_destroy(&data->forks[i]);
-		pthread_mutex_destroy(&data->arr_philo[i].meal_mutex);
-		i++;
+		i = 0;
+		while (i < data->nb_philo)
+		{
+			pthread_mutex_destroy(&data->forks[i]);
+			i++;
+		}
+		free(data->forks);
+	}
+	if (data->arr_philo)
+	{
+		i = 0;
+		while (i < data->nb_philo)
+		{
+			pthread_mutex_destroy(&data->arr_philo[i].meal_mutex);
+			i++;
+		}
+		free(data->arr_philo);
 	}
 	pthread_mutex_destroy(&data->print);
-	pthread_mutex_destroy(&data->dead_mutex); // AJOUT
-	pthread_mutex_destroy(&data->start_mutex); // 🔧 Ajout
-	free(data->forks);
-	free(data->arr_philo);
+	pthread_mutex_destroy(&data->dead_mutex);
+	pthread_mutex_destroy(&data->start_mutex);
 }

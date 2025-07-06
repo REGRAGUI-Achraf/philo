@@ -1,36 +1,62 @@
 #include "philo.h"
 
-void	take_forks(t_philo *philo)
+int take_forks(t_philo *philo)
 {
-	int	first_fork;
-	int	second_fork;
-	int	left_fork = philo->id - 1;
-	int	right_fork = philo->id % philo->data->nb_philo;
+    int left = philo->id - 1;
+    int right = philo->id % philo->data->nb_philo;
 
-	if (left_fork < right_fork)
-	{
-		first_fork = left_fork;
-		second_fork = right_fork;
-	}
-	else
-	{
-		first_fork = right_fork;
-		second_fork = left_fork;
-	}
+    if (simulation_stopped(philo->data))
+        return (0);
 
-	pthread_mutex_lock(&philo->data->forks[first_fork]);
-	print_status(philo, "has taken a fork");
-	pthread_mutex_lock(&philo->data->forks[second_fork]);
-	print_status(philo, "has taken a fork");
+    if (philo->id % 2 == 0) {
+        pthread_mutex_lock(&philo->data->forks[left]);
+        if (simulation_stopped(philo->data)) {
+            pthread_mutex_unlock(&philo->data->forks[left]);
+            return (0);
+        }
+        print_status(philo, "has taken a fork");
+        
+        pthread_mutex_lock(&philo->data->forks[right]);
+        if (simulation_stopped(philo->data)) {
+            pthread_mutex_unlock(&philo->data->forks[right]);
+            pthread_mutex_unlock(&philo->data->forks[left]);
+            return (0);
+        }
+        print_status(philo, "has taken a fork");
+    } else {
+        pthread_mutex_lock(&philo->data->forks[right]);
+        if (simulation_stopped(philo->data)) {
+            pthread_mutex_unlock(&philo->data->forks[right]);
+            return (0);
+        }
+        print_status(philo, "has taken a fork");
+        
+        pthread_mutex_lock(&philo->data->forks[left]);
+        if (simulation_stopped(philo->data)) {
+            pthread_mutex_unlock(&philo->data->forks[left]);
+            pthread_mutex_unlock(&philo->data->forks[right]);
+            return (0);
+        }
+        print_status(philo, "has taken a fork");
+    }
+    return (1);
 }
-
 
 void	philo_eat(t_philo *philo)
 {
 	int left_fork = philo->id - 1;
 	int right_fork = philo->id % philo->data->nb_philo;
 
-	take_forks(philo);
+	// Mettre à jour last_meal AVANT de prendre les fourchettes
+	pthread_mutex_lock(&philo->meal_mutex);
+	philo->last_meal = get_time();
+	pthread_mutex_unlock(&philo->meal_mutex);
+
+	if (!take_forks(philo)) {
+		return; // Simulation arrêtée
+	}
+
+	// Mettre à jour les repas et le temps de repas final
 	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_meal = get_time();
 	philo->meals++;
@@ -42,9 +68,12 @@ void	philo_eat(t_philo *philo)
 	pthread_mutex_unlock(&philo->data->forks[left_fork]);
 	pthread_mutex_unlock(&philo->data->forks[right_fork]);
 
-	print_status(philo, "is sleeping");
-	ft_usleep(philo->data->time_to_sleep);
+	if (!simulation_stopped(philo->data)) {
+		print_status(philo, "is sleeping");
+		ft_usleep(philo->data->time_to_sleep);
+	}
 }
+
 void	think_routine(t_philo *philo)
 {
 	long long	time_to_think;
@@ -54,41 +83,44 @@ void	think_routine(t_philo *philo)
 	pthread_mutex_unlock(&philo->meal_mutex);
 
 	if (time_to_think < 0)
-		time_to_think = 0;
+		time_to_think = 1;
 	if (time_to_think > 600)
 		time_to_think = 200;
+		
 	print_status(philo, "is thinking");
-	ft_usleep(time_to_think);
-}
-int	simulation_stopped(t_data *data)
-{
-	int val;
-	pthread_mutex_lock(&data->dead_mutex);
-	val = data->dead; // 1 si mort, 0 sinon
-	pthread_mutex_unlock(&data->dead_mutex);
-	return val;
+	
+	long long start = get_time();
+	while (get_time() - start < time_to_think && !simulation_stopped(philo->data))
+		ft_usleep(1);
 }
 
 void	*philosopher_routine(void *arg)
 {
 	t_philo	*philo = (t_philo *)arg;
 
-	// 🔧 Synchronisation de départ
 	pthread_mutex_lock(&philo->data->start_mutex);
 	pthread_mutex_unlock(&philo->data->start_mutex);	
 
+	// Décalage pour éviter que tous mangent en même temps
 	if (philo->id % 2 == 0)
-		ft_usleep(philo->data->time_to_eat);
+		ft_usleep(philo->data->time_to_eat / 2);
 
 	while (!simulation_stopped(philo->data))
 	{
 		philo_eat(philo);
+		
+		// Vérifier si on a assez mangé
 		pthread_mutex_lock(&philo->meal_mutex);
 		int meals_count = philo->meals;
 		pthread_mutex_unlock(&philo->meal_mutex);
+		
 		if (philo->data->nb_must_eat > 0 && meals_count >= philo->data->nb_must_eat)
 			break;
+			
+		if (simulation_stopped(philo->data))
+			break;
+			
 		think_routine(philo);
 	}
-	return NULL;
+	return (NULL);
 }

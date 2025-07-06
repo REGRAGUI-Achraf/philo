@@ -10,22 +10,23 @@ int	run_simulation(t_data *data)
         return (1); 
     }
 
-	pthread_mutex_lock(&data->start_mutex); // 🔧 verrouillage pour synchro
+	pthread_mutex_lock(&data->start_mutex);
 	data->start_time = get_time();
 
     int i = 0;
-	while (i < data->nb_philo)  // 🔧 initialisation correcte
+	while (i < data->nb_philo)
 	{	
         data->arr_philo[i].last_meal = data->start_time;
         i++;
     }
+    
 	if (create_philosopher_threads(data)) 
     {
         cleanup(data); 
         return (1); 
     }
 
-	pthread_mutex_unlock(&data->start_mutex); // 🔧 libération synchro
+	pthread_mutex_unlock(&data->start_mutex);
 
 	while (!simulation_stopped(data))
 	{
@@ -33,6 +34,7 @@ int	run_simulation(t_data *data)
 			break;
 		ft_usleep(1);
 	}
+	
 	join_philosopher_threads(data);
 	cleanup(data);
 	return (0);

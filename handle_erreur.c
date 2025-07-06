@@ -1,21 +1,25 @@
-#include "philo.h"
-
-int	check_death(t_philo *philo) // Check if a philosopher has died
+int check_death(t_philo *philo)
 {
-	long long	time_since_meal;
+    long long time_since_meal;
 
-	pthread_mutex_lock(&philo->meal_mutex);
-	time_since_meal = get_time() - philo->last_meal; // Calculate time since last meal
-	pthread_mutex_unlock(&philo->meal_mutex);
-	if (time_since_meal > philo->data->time_to_die)
-	{
-		print_status(philo, "died");
-		pthread_mutex_lock(&philo->data->dead_mutex);
-		philo->data->dead = 1; // Indicate that a philosopher has died
-		pthread_mutex_unlock(&philo->data->dead_mutex);
-		return (1);
-	}
-	return (0);
+    pthread_mutex_lock(&philo->meal_mutex);
+    time_since_meal = get_time() - philo->last_meal;
+    pthread_mutex_unlock(&philo->meal_mutex);
+
+    if (time_since_meal > philo->data->time_to_die)
+    {
+        pthread_mutex_lock(&philo->data->print);
+        pthread_mutex_lock(&philo->data->dead_mutex);
+        if (!philo->data->dead)
+        {
+            philo->data->dead = 1;
+            printf("%lld %d died\n", get_time() - philo->data->start_time, philo->id);
+        }
+        pthread_mutex_unlock(&philo->data->dead_mutex);
+        pthread_mutex_unlock(&philo->data->print);
+        return (1);
+    }
+    return (0);
 }
 
 int check_all_philosophers(t_philo *philos, t_data *data)
@@ -40,11 +44,12 @@ int check_all_philosophers(t_philo *philos, t_data *data)
         if (philos[i].meals < data->nb_must_eat)
         {
             pthread_mutex_unlock(&philos[i].meal_mutex);
-            return (0); // Continuer la simulation
+            return (0);
         }
         pthread_mutex_unlock(&philos[i].meal_mutex);
         i++;
     }
+    
     pthread_mutex_lock(&data->dead_mutex);
     data->dead = 1;
     pthread_mutex_unlock(&data->dead_mutex);
@@ -61,4 +66,17 @@ int	handle_single_philosopher(t_data *data)
 		return (1);
 	}
 	return (0);
+}
+
+// routine.c
+#include "philo.h"
+
+int	simulation_stopped(t_data *data)
+{
+	int val;
+	
+	pthread_mutex_lock(&data->dead_mutex);
+	val = data->dead;
+	pthread_mutex_unlock(&data->dead_mutex);
+	return (val);
 }
