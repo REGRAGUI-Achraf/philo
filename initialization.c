@@ -51,4 +51,3 @@ int	init_philosophers(t_data *data)
 	}
 	return (0);
 }
-

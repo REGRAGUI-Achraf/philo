@@ -8,12 +8,12 @@ long long	get_time(void)
 	return ((tv.tv_sec * 1000LL) + (tv.tv_usec / 1000));
 }
 
-void	ft_usleep(int ms)
+void	ft_usleep(int ms, t_data *data)
 {
 	long long	start;
 
 	start = get_time();
-	while (get_time() - start < ms)
+	while (get_time() - start < ms && !simulation_stopped(data))
 		usleep(500);
 }
 

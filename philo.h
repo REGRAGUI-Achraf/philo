@@ -35,15 +35,14 @@ typedef struct s_data
 
 // Utility functions
 long long	get_time(void);
-// void		ft_usleep(int ms);
-void ft_usleep_safe(t_philo *philo, int ms);
+void		ft_usleep(int ms, t_data *data);
 
 void		print_status(t_philo *philo, char *status);
 
 // Simulation functions
 int			check_death(t_philo *philo);
 int			simulation_stopped(t_data *data);
-void		take_forks(t_philo *philo);
+int		take_forks(t_philo *philo);
 void		philo_eat(t_philo *philo);
 void		*philosopher_routine(void *arg);
 int			check_all_philosophers(t_philo *philos, t_data *data);

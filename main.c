@@ -4,10 +4,10 @@ int	run_simulation(t_data *data)
 {
 	if (init_mutexes(data)) 
         return (1);
-	if (init_philosophers(data)) 
-    {   
-        cleanup(data); 
-        return (1); 
+	if (init_philosophers(data))
+    {
+        cleanup(data);
+        return (1);
     }
 
 	pthread_mutex_lock(&data->start_mutex);
@@ -32,7 +32,7 @@ int	run_simulation(t_data *data)
 	{
 		if (check_all_philosophers(data->arr_philo, data))
 			break;
-		ft_usleep(1);
+		ft_usleep(1, data);
 	}
 	
 	join_philosopher_threads(data);

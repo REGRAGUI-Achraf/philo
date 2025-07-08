@@ -97,8 +97,8 @@ void	print_status(t_philo *philo, char *status)
 	pthread_mutex_unlock(&philo->data->dead_mutex);
 	if (!stopped)
 	{
-		timestamp = get_time() - philo->data->start_time;
-		printf("%lld %d %s\n", timestamp, philo->id, status);
+		// timestamp = get_time() - philo->data->start_time;
+		printf("%lld %d %s\n", get_time() - philo->data->start_time, philo->id, status);
 	}
 	pthread_mutex_unlock(&philo->data->print);
 }
@@ -303,7 +303,6 @@ void	join_philosopher_threads(t_data *data)
 	}
 }
 
-// monitor.c
 #include "philo.h"
 
 int check_death(t_philo *philo)
@@ -515,7 +514,6 @@ void	*philosopher_routine(void *arg)
 }
 
 // main.c
-#include "philo.h"
 
 int	run_simulation(t_data *data)
 {
