@@ -1,3 +1,5 @@
+#include "philo.h"
+
 int check_death(t_philo *philo)
 {
     long long time_since_meal;
