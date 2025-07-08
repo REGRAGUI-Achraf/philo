@@ -17,6 +17,15 @@ void	ft_usleep(int ms)
 		usleep(500);
 }
 
+void	ft_usleep_safe(t_philo *philo, int ms)
+{
+	long long	start;
+
+	start = get_time();
+	while (!simulation_stopped(philo->data) && get_time() - start < ms)
+		usleep(100);
+}
+
 void	print_status(t_philo *philo, char *status)
 {
 	long long	timestamp;

@@ -47,11 +47,6 @@ void	philo_eat(t_philo *philo)
 	int left_fork = philo->id - 1;
 	int right_fork = philo->id % philo->data->nb_philo;
 
-	// Mettre à jour last_meal AVANT de prendre les fourchettes
-	pthread_mutex_lock(&philo->meal_mutex);
-	philo->last_meal = get_time();
-	pthread_mutex_unlock(&philo->meal_mutex);
-
 	if (!take_forks(philo)) {
 		return; // Simulation arrêtée
 	}
@@ -63,14 +58,14 @@ void	philo_eat(t_philo *philo)
 	pthread_mutex_unlock(&philo->meal_mutex);
 
 	print_status(philo, "is eating");
-	ft_usleep(philo->data->time_to_eat);
+	ft_usleep_safe(philo, philo->data->time_to_eat);
 
 	pthread_mutex_unlock(&philo->data->forks[left_fork]);
 	pthread_mutex_unlock(&philo->data->forks[right_fork]);
 
 	if (!simulation_stopped(philo->data)) {
 		print_status(philo, "is sleeping");
-		ft_usleep(philo->data->time_to_sleep);
+		ft_usleep_safe(philo, philo->data->time_to_sleep);
 	}
 }
 
@@ -91,7 +86,7 @@ void	think_routine(t_philo *philo)
 	
 	long long start = get_time();
 	while (get_time() - start < time_to_think && !simulation_stopped(philo->data))
-		ft_usleep(1);
+		ft_usleep_safe(philo, 1);
 }
 
 void	*philosopher_routine(void *arg)
@@ -103,7 +98,7 @@ void	*philosopher_routine(void *arg)
 
 	// Décalage pour éviter que tous mangent en même temps
 	if (philo->id % 2 == 0)
-		ft_usleep(philo->data->time_to_eat / 2);
+		ft_usleep_safe(philo, philo->data->time_to_eat / 2);
 
 	while (!simulation_stopped(philo->data))
 	{
