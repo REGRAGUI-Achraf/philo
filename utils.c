@@ -11,10 +11,16 @@ long long	get_time(void)
 void	ft_usleep(int ms, t_data *data)
 {
 	long long	start;
+	long long	current;
 
 	start = get_time();
-	while (get_time() - start < ms && !simulation_stopped(data))
-		usleep(500);
+	while (!simulation_stopped(data))
+	{
+		current = get_time();
+		if (current - start >= ms)
+			break;
+		usleep(100);
+	}
 }
 
 void	print_status(t_philo *philo, char *status)

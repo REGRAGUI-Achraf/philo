@@ -79,6 +79,18 @@ void philo_eat(t_philo *philo)
 void	think_routine(t_philo *philo)
 {
 	print_status(philo, "is thinking");
+	
+	if (philo->data->nb_philo % 2 != 0)
+	{
+		int think_time = (philo->data->time_to_eat * 2) - philo->data->time_to_sleep;
+		if (think_time > 0)
+			ft_usleep(think_time, philo->data);
+	}
+	else
+	{
+		// Pour un nombre pair de philosophes, penser un peu pour éviter la famine
+		ft_usleep(1, philo->data);
+	}
 }
 
 void	*philosopher_routine(void *arg)
@@ -88,13 +100,14 @@ void	*philosopher_routine(void *arg)
 	pthread_mutex_lock(&philo->data->start_mutex);
 	pthread_mutex_unlock(&philo->data->start_mutex);
 
-	// Décalage pour éviter que tous mangent en même temps
+	// Décalage initial plus petit pour les philosophes pairs
 	if (philo->id % 2 == 0)
-		ft_usleep(philo->data->time_to_eat, philo->data);
+		ft_usleep(15, philo->data);
 
 	while (!simulation_stopped(philo->data))
 	{
 		philo_eat(philo);
+		
 		// Vérifier si on a assez mangé
 		pthread_mutex_lock(&philo->meal_mutex);
 		int meals_count = philo->meals;
@@ -109,4 +122,3 @@ void	*philosopher_routine(void *arg)
 		think_routine(philo);
 	}
 	return (NULL);
-}
