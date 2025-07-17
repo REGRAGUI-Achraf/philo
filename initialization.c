@@ -1,34 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   initialization.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aregragu <aregragu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/17 23:36:04 by aregragu          #+#    #+#             */
+/*   Updated: 2025/07/17 23:36:40 by aregragu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
-
-int	init_mutexes(t_data *data)
-{
-	int	i;
-
-	data->forks = malloc(sizeof(pthread_mutex_t) * data->nb_philo);
-	if (!data->forks)
-		return (1);
-	
-	i = 0;
-	while (i < data->nb_philo)
-	{
-		if (pthread_mutex_init(&data->forks[i], NULL))
-		{
-			while (--i >= 0)
-				pthread_mutex_destroy(&data->forks[i]);
-			free(data->forks);
-			return (1);
-		}
-		i++;
-	}
-	
-	if (pthread_mutex_init(&data->print, NULL))
-		return (1);
-	if (pthread_mutex_init(&data->dead_mutex, NULL)) 
-		return (1);
-	if (pthread_mutex_init(&data->start_mutex, NULL))
-    	return (1);
-	return (0);
-}
 
 int	init_philosophers(t_data *data)
 {
@@ -51,3 +33,34 @@ int	init_philosophers(t_data *data)
 	}
 	return (0);
 }
+
+int	init_mutexes(t_data *data)//return 0 si ok, 1 si erreur
+{
+	int	i;
+
+	data->forks = malloc(sizeof(pthread_mutex_t) * data->nb_philo);
+	if (!data->forks)
+		return (1);
+	
+	i = 0;
+	while (i < data->nb_philo)
+	{
+		if (pthread_mutex_init(&data->forks[i], NULL))
+		{
+			while (--i >= 0)
+				pthread_mutex_destroy(&data->forks[i]);
+			free(data->forks);
+			return (1);
+		}
+		i++;
+	}
+	
+	if (pthread_mutex_init(&data->print, NULL)) // return 1 si erreur
+		return (1);
+	if (pthread_mutex_init(&data->dead_mutex, NULL)) // return 1 si erreur
+		return (1);
+	if (pthread_mutex_init(&data->start_mutex, NULL)) // return 1 si erreur
+    	return (1);
+	return (0);
+}
+

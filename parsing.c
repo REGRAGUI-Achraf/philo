@@ -12,34 +12,34 @@ int	nb_args(int argc)
 
 int	ft_atoi_safe(char *str)
 {
-	long	result;
-	int		i;
+		int		i;
+	int		sign;
+	long	n;
 
-	if (!str || !str[0])
-		return (-1);
-	
+	if (!str)
+		return (0);
 	i = 0;
-	while (str[i])
+	sign = 1;
+	n = 0;
+	while (str[i] == 32 || (str[i] >= 9 && str[i] <= 13))
+		i++;
+	if (str[i] == '-')
 	{
-		if (str[i] < '0' || str[i] > '9')
-			return (-1);
+		sign = -1;
 		i++;
 	}
-	
-	result = 0;
-	i = 0;
-	while (str[i])
+	else if (str[i] == '+')
+		i++;
+	while (str[i] >= '0' && str[i] <= '9')
 	{
-		result = result * 10 + (str[i] - '0');
-		if (result > 2147483647)
-			return (-1);
+		n = n * 10 + (str[i] - '0');
 		i++;
 	}
-	
-	if (result == 0)
-		return (-1);
-		
-	return ((int)result);
+	if (n * sign > 2147483647)
+		return (2147483647);
+	if (n * sign < -2147483648)
+		return (-2147483648);
+	return ((int)(n * sign));
 }
 
 int	is_valid_arguments(int argc, char **argv)

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   handle_erreur.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aregragu <aregragu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/17 23:36:55 by aregragu          #+#    #+#             */
+/*   Updated: 2025/07/17 23:37:09 by aregragu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 int	handle_single_philosopher(t_data *data)
@@ -11,14 +23,14 @@ int	handle_single_philosopher(t_data *data)
 	}
 	return (0);
 }
-int check_all_philosophers(t_philo *philos, t_data *data)
+int check_all_philosophers(t_philo *philos, t_data *data) //return 1 si tous les philosophes ont mangé
 {
     int i;
     
     i = 0;
     while (i < data->nb_philo)
     {
-        if (check_death(&philos[i]))
+        if (check_death(&philos[i])) //return 1 si un philosophe est mort
             return (1);
         i++;
     }
@@ -29,8 +41,8 @@ int check_all_philosophers(t_philo *philos, t_data *data)
     i = 0;
     while (i < data->nb_philo)
     {
-        pthread_mutex_lock(&philos[i].meal_mutex);
-        if (philos[i].meals < data->nb_must_eat)
+        pthread_mutex_lock(&philos[i].meal_mutex); // Protéger l'accès à meals
+        if (philos[i].meals < data->nb_must_eat) // Vérifier si le philosophe a mangé suffisamment
         {
             pthread_mutex_unlock(&philos[i].meal_mutex);
             return (0);
@@ -44,7 +56,8 @@ int check_all_philosophers(t_philo *philos, t_data *data)
     pthread_mutex_unlock(&data->dead_mutex);
     return (1);
 }
-int check_death(t_philo *philo)
+
+int check_death(t_philo *philo) //return 1 si le philosophe est mort
 {
     long long time_since_meal;
     
@@ -67,7 +80,8 @@ int check_death(t_philo *philo)
     }
     return (0);
 }
-int	simulation_stopped(t_data *data)
+
+int	simulation_stopped(t_data *data) //return 1 si la simulation est arrêtée
 {
     int val;
     

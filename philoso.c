@@ -1,54 +1,51 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philoso.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aregragu <aregragu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/17 23:36:49 by aregragu          #+#    #+#             */
+/*   Updated: 2025/07/17 23:47:36 by aregragu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-int take_forks(t_philo *philo)
+static int	take_two_forks(t_philo *philo, int first, int second)
 {
-    int left = philo->id - 1;
-    int right = philo->id % philo->data->nb_philo;
-
-    if (simulation_stopped(philo->data))
-        return (0);
-
-    if (philo->id % 2 == 0) 
+	pthread_mutex_lock(&philo->data->forks[first]);
+	if (simulation_stopped(philo->data))
 	{
-        pthread_mutex_lock(&philo->data->forks[left]);
-        if (simulation_stopped(philo->data)) 
-		{
-			pthread_mutex_unlock(&philo->data->forks[left]);
-            return (0);
-        }
-		print_status(philo, "has taken a fork");
-        
-        pthread_mutex_lock(&philo->data->forks[right]);
-        if (simulation_stopped(philo->data)) 
-		{
-            pthread_mutex_unlock(&philo->data->forks[right]);
-            pthread_mutex_unlock(&philo->data->forks[left]);
-            return (0);
-        }
-        print_status(philo, "has taken a fork");
-    } 
-	else 
+		pthread_mutex_unlock(&philo->data->forks[first]);
+		return (0);
+	}
+	print_status(philo, "has taken a fork");
+	pthread_mutex_lock(&philo->data->forks[second]);
+	if (simulation_stopped(philo->data))
 	{
-        pthread_mutex_lock(&philo->data->forks[right]);
-        if (simulation_stopped(philo->data)) 
-		{
-            pthread_mutex_unlock(&philo->data->forks[right]);
-            return (0);
-        }
-        print_status(philo, "has taken a fork");
-        
-        pthread_mutex_lock(&philo->data->forks[left]);
-        if (simulation_stopped(philo->data)) 
-		{
-            pthread_mutex_unlock(&philo->data->forks[left]);
-            pthread_mutex_unlock(&philo->data->forks[right]);
-            return (0);
-        }
-        print_status(philo, "has taken a fork");
-    }
-    return (1);
+		pthread_mutex_unlock(&philo->data->forks[second]);
+		pthread_mutex_unlock(&philo->data->forks[first]);
+		return (0);
+	}
+	print_status(philo, "has taken a fork");
+	return (1);
 }
 
+int	take_forks(t_philo *philo)
+{
+	int	left;
+	int	right;
+
+	left = philo->id - 1;
+	right = philo->id % philo->data->nb_philo;
+	if (simulation_stopped(philo->data))
+		return (0);
+	if (philo->id % 2 == 0)
+		return (take_two_forks(philo, left, right));
+	else
+		return (take_two_forks(philo, right, left));
+}
 void philo_eat(t_philo *philo)
 {
 	int left_fork = philo->id - 1;
@@ -57,7 +54,6 @@ void philo_eat(t_philo *philo)
 	if (!take_forks(philo)) 
 		return; // Simulation arrêtée
 
-	// Mettre à jour les repas et le temps de repas final, JUSTE avant de manger
 	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_meal = get_time();
 	philo->meals++;
@@ -88,7 +84,6 @@ void	think_routine(t_philo *philo)
 	}
 	else
 	{
-		// Pour un nombre pair de philosophes, penser un peu pour éviter la famine
 		ft_usleep(1, philo->data);
 	}
 }
@@ -100,7 +95,6 @@ void	*philosopher_routine(void *arg)
 	pthread_mutex_lock(&philo->data->start_mutex);
 	pthread_mutex_unlock(&philo->data->start_mutex);
 
-	// Décalage initial plus petit pour les philosophes pairs
 	if (philo->id % 2 == 0)
 		ft_usleep(15, philo->data);
 
@@ -108,7 +102,6 @@ void	*philosopher_routine(void *arg)
 	{
 		philo_eat(philo);
 		
-		// Vérifier si on a assez mangé
 		pthread_mutex_lock(&philo->meal_mutex);
 		int meals_count = philo->meals;
 		pthread_mutex_unlock(&philo->meal_mutex);
@@ -122,3 +115,5 @@ void	*philosopher_routine(void *arg)
 		think_routine(philo);
 	}
 	return (NULL);
+}
+
