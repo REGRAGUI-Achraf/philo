@@ -18,7 +18,7 @@ void	ft_usleep(int ms, t_data *data)
 	{
 		current = get_time();
 		if (current - start >= ms)
-			break;
+			break ;
 		usleep(100);
 	}
 }
@@ -29,7 +29,7 @@ void	print_status(t_philo *philo, char *status)
 	int			stopped;
 
 	pthread_mutex_lock(&philo->data->print);
-	pthread_mutex_lock(&philo->data->dead_mutex); 
+	pthread_mutex_lock(&philo->data->dead_mutex);
 	stopped = philo->data->dead;
 	pthread_mutex_unlock(&philo->data->dead_mutex);
 	if (!stopped)

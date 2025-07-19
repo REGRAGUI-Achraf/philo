@@ -4,7 +4,7 @@ int	nb_args(int argc)
 {
 	if (argc < 5 || argc > 6)
 	{
-		printf("Usage: ./philo [number_of_philosophers] [time_to_die] [time_to_eat] [time_to_sleep] [number_of_times_each_philosopher_must_eat]\n");
+		printf("TRY: ./philo [number_of_philosophers] [time_to_die] [time_to_eat] [time_to_sleep] [number_of_times_each_philosopher_must_eat]\n");
 		return (1);
 	}
 	return (0);
@@ -12,7 +12,7 @@ int	nb_args(int argc)
 
 int	ft_atoi_safe(char *str)
 {
-		int		i;
+	int		i;
 	int		sign;
 	long	n;
 
@@ -21,24 +21,20 @@ int	ft_atoi_safe(char *str)
 	i = 0;
 	sign = 1;
 	n = 0;
-	while (str[i] == 32 || (str[i] >= 9 && str[i] <= 13))
-		i++;
-	if (str[i] == '-')
+	while (str[i])
 	{
-		sign = -1;
+		if (str[i] < '0' || str[i] > '9')
+			return (0);
 		i++;
 	}
-	else if (str[i] == '+')
+	i = 0;
+	while (str[i] == 32 || (str[i] >= 9 && str[i] <= 13))
 		i++;
 	while (str[i] >= '0' && str[i] <= '9')
 	{
 		n = n * 10 + (str[i] - '0');
 		i++;
 	}
-	if (n * sign > 2147483647)
-		return (2147483647);
-	if (n * sign < -2147483648)
-		return (-2147483648);
 	return ((int)(n * sign));
 }
 
@@ -46,7 +42,7 @@ int	is_valid_arguments(int argc, char **argv)
 {
 	int	i;
 	int	value;
-	
+
 	i = 1;
 	while (i < argc)
 	{
@@ -67,19 +63,16 @@ int	init_all(t_data *data, int argc, char **argv)
 	data->time_to_die = ft_atoi_safe(argv[2]);
 	data->time_to_eat = ft_atoi_safe(argv[3]);
 	data->time_to_sleep = ft_atoi_safe(argv[4]);
-	
 	if (argc == 6)
 		data->nb_must_eat = ft_atoi_safe(argv[5]);
 	else
 		data->nb_must_eat = -1;
-	
 	data->dead = 0;
 	data->start_time = 0;
 	data->forks = NULL;
 	data->arr_philo = NULL;
-	
-	if (data->nb_philo <= 0 || data->time_to_die <= 0 || 
-		data->time_to_eat <= 0 || data->time_to_sleep <= 0)
+	if (data->nb_philo <= 0 || data->time_to_die <= 0 || data->time_to_eat <= 0
+		|| data->time_to_sleep <= 0)
 	{
 		printf("Error: All values must be positive\n");
 		return (1);

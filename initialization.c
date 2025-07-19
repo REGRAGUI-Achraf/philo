@@ -6,7 +6,7 @@
 /*   By: aregragu <aregragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 23:36:04 by aregragu          #+#    #+#             */
-/*   Updated: 2025/07/17 23:36:40 by aregragu         ###   ########.fr       */
+/*   Updated: 2025/07/19 04:00:06 by aregragu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,9 @@ int	init_philosophers(t_data *data)
 	data->arr_philo = malloc(sizeof(t_philo) * data->nb_philo);
 	if (!data->arr_philo)
 		return (1);
-	
 	i = 0;
 	while (i < data->nb_philo)
-	{	
+	{
 		data->arr_philo[i].id = i + 1;
 		data->arr_philo[i].meals = 0;
 		data->arr_philo[i].data = data;
@@ -34,14 +33,13 @@ int	init_philosophers(t_data *data)
 	return (0);
 }
 
-int	init_mutexes(t_data *data)//return 0 si ok, 1 si erreur
+int	init_mutexes(t_data *data) // return 0 si ok, 1 si erreur
 {
-	int	i;
+	int i;
 
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->nb_philo);
 	if (!data->forks)
 		return (1);
-	
 	i = 0;
 	while (i < data->nb_philo)
 	{
@@ -54,13 +52,11 @@ int	init_mutexes(t_data *data)//return 0 si ok, 1 si erreur
 		}
 		i++;
 	}
-	
 	if (pthread_mutex_init(&data->print, NULL)) // return 1 si erreur
 		return (1);
 	if (pthread_mutex_init(&data->dead_mutex, NULL)) // return 1 si erreur
 		return (1);
 	if (pthread_mutex_init(&data->start_mutex, NULL)) // return 1 si erreur
-    	return (1);
+		return (1);
 	return (0);
 }
-
